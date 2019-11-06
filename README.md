@@ -13,3 +13,6 @@ gcc lex.yy.c
 //javacc Karloff.jj
 //javac *.java
 java Karloff arquivo
+
+git remote add origin git@github.com:thiagoheron1/UFPel-Compiladores.git
+
