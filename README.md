@@ -1,6 +1,6 @@
 # Trabalho 1
 1. Folder Java: javac *.java
-2. Folder Java: java Compilador ../inputs/nameFile.txt
+2. Folder Java: java Compilador inputs/nameFile.txt
 3. Folder MontadorDePilha: python main.py
 
 # Trabalho 2
