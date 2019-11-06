@@ -1,0 +1,11 @@
+void main{
+  newVar int x;
+  newVar int y;
+}
+
+func int adicao(int x, int y){
+  newVar int result;
+  result = (x + y);
+
+  return result;
+}

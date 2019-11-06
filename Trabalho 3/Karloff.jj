@@ -1,0 +1,171 @@
+PARSER_BEGIN(Karloff)
+import java.io.*;
+public class Karloff {
+
+  public static void main(String args[]) throws ParseException,IOException {
+    
+    Karloff parser = new Karloff(new FileInputStream(args[0]));
+    parser.Karloff();
+  }
+
+}
+
+PARSER_END(Karloff)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+}
+
+TOKEN :
+{
+  <MAIN: "main">
+| <NVAR: "newVar">
+| <ACHAVES: "{">
+| <FCHAVES: "}">
+| <APAR: "(">
+| <FPAR: ")">
+| <PVIRG: ";">
+| <VIRG: ",">
+| <VOID: "void">
+| <INT: "int">
+| <BOOL: "bool">
+| <TRUE: "true">
+| <FALSE: "false">
+| <IF: "if">
+| <THEN: "then">
+| <WHILE: "while">
+| <REPEAT: "repeat">
+| <RETURN: "return">
+| <UNTIL: "until">
+| <SOUPUT: "System.output">
+| <ATRIB: "=">
+| <FUNC: "func">
+| <TOKEN_LITERAL: <DIGITOS><FACAO_OPCIONAL><EXPOENTE_OPCIONAL>>
+| <TOKEN_ID: <LETRA>(<LETRAOUDIGITO>)*(<FINALSUBLINHADO>)*>
+}
+
+
+TOKEN :
+{
+ <NUM: ["1"-"9"](["0"-"9"])+>
+|<OP: ("+" | "-" | "*" | "/" | "&&" | "||" | "<" | ">" | "==")>
+|<ID: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9"])*>
+|<# DIGITO: ["0"-"9"]>
+|<# LETRA: ["a"-"z","A"-"Z"]>
+|<# DIGITOS: (<DIGITO>)+>
+|<# LETRAOUDIGITO: (<LETRA>|<DIGITO>)>
+|<# FINALSUBLINHADO: ((<LETRAOUDIGITO>)+)* ("_")*>
+|<# EXPOENTE_OPCIONAL: ("E"("+"|"-")? <DIGITOS>)?>
+|<# FACAO_OPCIONAL: ("."(<DIGITOS>))?>
+
+
+}
+
+
+
+void Karloff () :
+{}
+{ 
+
+  Main() 
+  (Func())?
+  <EOF> 
+}
+	
+
+void Main ():
+{}
+{
+  <VOID> <MAIN> <ACHAVES> 
+   VarDecl()
+   SeqComandos()
+ <FCHAVES>
+}
+
+void VarDecl():
+{}
+{
+   (<NVAR> Tipo() <TOKEN_ID> <PVIRG>)*
+}
+
+void Tipo():
+{}
+{
+   (<INT>|<BOOL>)
+}
+
+
+void SeqComandos():
+{}
+{
+   (Comando())* 
+}
+
+void Comando():
+{}
+{
+   <TOKEN_ID> ComandoAlternativaMesmoSimbolo()
+|  <IF> <APAR> Exp() <FPAR> <THEN> <ACHAVES> SeqComandos() <FCHAVES> <PVIRG>
+|  <WHILE> <APAR> Exp() <FPAR> <ACHAVES> SeqComandos() <FCHAVES> <PVIRG>
+|  <REPEAT> <ACHAVES> SeqComandos() <FCHAVES> <UNTIL> <APAR> Exp() <FPAR> <PVIRG>
+|  <RETURN> Exp() <PVIRG>
+|  <SOUPUT> <APAR> Exp() <FPAR> <PVIRG>
+}
+
+void ComandoAlternativaMesmoSimbolo():
+{}
+{
+  <ATRIB>Exp()<PVIRG>|<APAR>(ListaExp())?<FPAR><PVIRG>
+}
+
+void Exp():
+{}
+{
+   <APAR> Exp() <OP> Exp() <FPAR> | Fator()
+}
+
+void Fator():
+{}
+{
+  <TOKEN_ID> FatorMesmoSimbolo() | <TOKEN_LITERAL> | <FALSE> | <TRUE>
+}
+
+void FatorMesmoSimbolo():
+{}
+{
+  (<APAR> (ListaExp()) <FPAR>)?
+}
+
+void ListaExp():
+{}
+{
+   Exp() ListaExpRecursaoEsq()  
+}
+
+void ListaExpRecursaoEsq():
+{}
+{
+   (<VIRG> Exp() ListaExpRecursaoEsq())?  
+}
+
+void Func():
+{}
+{
+   (<FUNC> Tipo() <TOKEN_ID> <APAR> (ListaArg())? <FPAR> <ACHAVES> VarDecl() SeqComandos() <FCHAVES>)+
+}
+
+void ListaArg():
+{}
+{
+   Tipo() <TOKEN_ID> (ListaArgRecursaoEsq())
+}
+
+void ListaArgRecursaoEsq():
+{}
+{
+   (<VIRG> Tipo() <TOKEN_ID> ListaArgRecursaoEsq())?
+}
